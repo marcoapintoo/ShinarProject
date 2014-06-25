@@ -61,23 +61,42 @@ public class NimrodFormatter implements BaseFormatter {
     }
 
     @Override
-    public String format(NeutralClass klazz) {
+    public String format(NeutralClass classObject) {
         HashMap<String, Object> map = new HashMap<String, Object>();
-        commonParameters(map, klazz);
+        commonParameters(map, classObject);
         //map.put("ancestor", "TObject");
-        map.put("ancestor", klazz.getParents().size() > 0 ? klazz.getParents().get(0).getName() : "TObject");
+        map.put("ancestor", classObject.getParents().size() > 0 ? classObject.getParents().get(0).getName() : "TObject");
         StringBuilder code = new StringBuilder((String) TemplateRuntime.eval(
                 "@{tabs}type @{name}@{visibility} = object of @{ancestor}\n",
                 map));
         tabular++;
-        for (Field field : klazz.getFields()) {
+        for (Field field : classObject.getFields()) {
             //field.getCode(this);
             code.append(format(field));
         }
         tabular--;
-        for (Method method : klazz.getMethods()) {
+        for (Method method : classObject.getMethods()) {
             code.append(format(method));
         }
+        //TODO: Inner classes!
+        return code.toString();
+    }
+
+    @Override
+    public String format(NeutralInterface interfaceObject) {
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        commonParameters(map, interfaceObject);
+        //map.put("ancestor", "TObject");
+        map.put("ancestor", interfaceObject.getParents().size() > 0 ? interfaceObject.getParents().get(0).getName() : "TObject");
+        StringBuilder code = new StringBuilder((String) TemplateRuntime.eval(
+                "@{tabs}type @{name}@{visibility} = object of @{ancestor}\n",
+                map));
+        tabular++;
+        for (Field field : interfaceObject.getFields()) {
+            //field.getCode(this);
+            code.append(format(field));
+        }
+        tabular--;
         return code.toString();
     }
 
@@ -86,9 +105,16 @@ public class NimrodFormatter implements BaseFormatter {
         return null;
     }
 
+
     @Override
-    public String format(NeutralInterface object) {
-        return null;
+    public String format(Field field) {
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        commonParameters(map, field);
+        map.put("type", (field.getType().isPrimitive() ? "ref " : "") + field.getType().getName());
+        String code = (String) TemplateRuntime.eval(
+                "@{tabs}@{name}@{visibility}: @{type}\n",
+                map);
+        return code;
     }
 
     @Override
@@ -103,16 +129,6 @@ public class NimrodFormatter implements BaseFormatter {
         return code;
     }
 
-    @Override
-    public String format(Field field) {
-        HashMap<String, Object> map = new HashMap<String, Object>();
-        commonParameters(map, field);
-        map.put("type", (field.getType().isPrimitive() ? "ref " : "") + field.getType().getName());
-        String code = (String) TemplateRuntime.eval(
-                "@{tabs}@{name}@{visibility}: @{type}\n",
-                map);
-        return code;
-    }
 
     @Override
     public String format(Import object) {

@@ -1,4 +1,4 @@
-#Shinar Project
+# Shinar Project
 
 Nimrod appears as a potential language at a low-level programming but with some nice features à la Python.
 But it lacks from one single and important detail: a complete library.
@@ -19,4 +19,7 @@ In the Bible, Shinar is the kingdom of Nimrod.
 Because Java is easier to analyze than C, and far more from Python (I'm an inveterate pythonist).
 
 ## Important note
+
+```
 The project is not finished yet! Its structure could change in any moment.
+```
