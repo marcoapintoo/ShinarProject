@@ -16,10 +16,12 @@ import org.shinar.neutral.representation.expression.NumberLiteral;
 import org.shinar.neutral.representation.expression.StringLiteral;
 import org.shinar.neutral.representation.expression.SuperFieldAccess;
 import org.shinar.neutral.representation.expression.TypeLiteral;
-import org.shinar.neutral.representation.statement.*;
+import org.shinar.neutral.representation.statement.ListVariableDeclaration;
 import org.shinar.neutral.representation.statement.VariableDeclaration;
+import org.shinar.neutral.representation.statement.VariableModifier;
+import org.shinar.neutral.representation.statement.While;
+import org.shinar.utils.InfiniteRecursionWarning;
 import org.shinar.utils.MultiMethod;
-import org.shinar.utils.NoDispatchedMethod;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -31,8 +33,8 @@ public class ExpressionAnalyzer {
 
     public static Expression analyze(org.eclipse.jdt.core.dom.Expression expression) {
         try {
-            return (Expression) MultiMethod.redispatchStatic(expression);
-        } catch (NoDispatchedMethod e) {
+            return (Expression) MultiMethod.Apply.invokeStatic(expression);
+        } catch (InfiniteRecursionWarning e) {
             throw new RuntimeException(e);
         }
     }
@@ -192,7 +194,6 @@ public class ExpressionAnalyzer {
     }
 
 
-
     public static Expression analyze(Annotation expression) {
         //TODO: Handle java annotations
         return null;
@@ -211,7 +212,7 @@ public class ExpressionAnalyzer {
 
     public static Array analyze(ArrayInitializer expression) {
         Array result = new Array();
-        for(org.eclipse.jdt.core.dom.Expression e: (List<org.eclipse.jdt.core.dom.Expression>) expression.expressions() ){
+        for (org.eclipse.jdt.core.dom.Expression e : (List<org.eclipse.jdt.core.dom.Expression>) expression.expressions()) {
             result.getElements().add(ExpressionAnalyzer.analyze(e));
         }
         return result;
@@ -256,14 +257,14 @@ public class ExpressionAnalyzer {
     }
 
     public static BooleanLiteral analyze(org.eclipse.jdt.core.dom.BooleanLiteral expression) {
-        BooleanLiteral result=new BooleanLiteral();
+        BooleanLiteral result = new BooleanLiteral();
         result.setValue(expression.booleanValue());
         return result;
     }
 
     public static CharacterLiteral analyze(org.eclipse.jdt.core.dom.CharacterLiteral expression) {
         CharacterLiteral result = new CharacterLiteral();
-        result.setValue(expression.charValue()+"");
+        result.setValue(expression.charValue() + "");
         result.setEscapedValue(expression.getEscapedValue());
         return result;
     }
@@ -295,9 +296,11 @@ public class ExpressionAnalyzer {
     public static Name analyze(org.eclipse.jdt.core.dom.Name expression) {
         return Name.of(expression.getFullyQualifiedName());
     }
+
     public static Name analyze(SimpleName expression) {
         return Name.of(expression.getFullyQualifiedName());
     }
+
     public static Name analyze(QualifiedName expression) {
         return Name.of(expression.getFullyQualifiedName());
     }

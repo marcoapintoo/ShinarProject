@@ -13,12 +13,17 @@ import java.util.Set;
 @Data
 public class NeutralObject {
     private ObjectVisibility visibility = ObjectVisibility.Package;
-    @Setter(AccessLevel.PROTECTED) private Set<ObjectAccess> access = EnumSet.of(ObjectAccess.Default);
+    @Setter(AccessLevel.PROTECTED)
+    private Set<ObjectAccess> access = EnumSet.of(ObjectAccess.Default);
     private ObjectInstantiation instantiation = ObjectInstantiation.Instance;
 
     private String name;
 
-    public String getCode(Formatter formatter) {
-        return formatter.format(this);
-    }
+    /*
+    public String getCode(SimpleFormatter formatter) {
+        //try {
+            //MultiMethod.redispatch(this, formatter);
+            return formatter.format(this);
+        //}
+    }*/
 }

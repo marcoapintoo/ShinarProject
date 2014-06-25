@@ -5,9 +5,7 @@ import lombok.Data;
 import lombok.Setter;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by marco on 18/06/14.

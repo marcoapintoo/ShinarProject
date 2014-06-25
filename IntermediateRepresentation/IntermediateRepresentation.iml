@@ -12,6 +12,8 @@
     <orderEntry type="library" name="org.mvel:mvel:2.0M2" level="project" />
     <orderEntry type="library" name="org.eclipse.jdt:org.eclipse.jdt.core:3.7.1" level="project" />
     <orderEntry type="library" name="org.apache.commons:commons-lang3:3.3.2" level="project" />
+    <orderEntry type="module" module-name="Utils" />
+    <orderEntry type="library" name="junit:junit:4.11" level="project" />
   </component>
 </module>
 

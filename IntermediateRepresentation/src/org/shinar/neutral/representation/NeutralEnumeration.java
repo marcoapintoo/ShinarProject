@@ -12,5 +12,6 @@ import java.util.List;
  */
 @Data
 public class NeutralEnumeration extends NeutralCodeUnit {
-    @Setter(AccessLevel.PRIVATE) private List<Field> fields = new ArrayList<Field>();
+    @Setter(AccessLevel.PRIVATE)
+    private List<Field> fields = new ArrayList<Field>();
 }

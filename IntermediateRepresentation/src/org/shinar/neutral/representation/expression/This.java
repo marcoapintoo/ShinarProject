@@ -9,7 +9,8 @@ import org.shinar.neutral.representation.Directory;
 @Data
 public class This implements Expression {
     protected Directory namespace;
-    public boolean isSimple(){
+
+    public boolean isSimple() {
         return namespace == null;
     }
 

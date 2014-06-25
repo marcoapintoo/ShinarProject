@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.Setter;
 import org.shinar.neutral.representation.statement.CodeBlock;
 import org.shinar.neutral.representation.statement.ListVariableDeclaration;
-import org.shinar.neutral.representation.statement.Statement;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -7,7 +7,7 @@ import lombok.Data;
  */
 @Data
 public class PrefixOperation implements Expression {
-    public enum Operator{
+    public enum Operator {
         AutoIncrement,
         AutoDecrement,
         Plus,
@@ -15,6 +15,7 @@ public class PrefixOperation implements Expression {
         Complement,
         Not
     }
+
     protected Operator operator;
     protected Expression operand;
 }

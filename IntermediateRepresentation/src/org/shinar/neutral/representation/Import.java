@@ -8,15 +8,16 @@ import org.shinar.neutral.representation.expression.Name;
  */
 @Data
 public class Import extends Name {
-    public String getFullName(){
-        return namespace!=null?namespace.getFullName() + "." + name: name;
+    public String getFullName() {
+        return namespace != null ? namespace.getFullName() + "." + name : name;
     }
-    public boolean isOnDemand(){
+
+    public boolean isOnDemand() {
         return name == "*";
     }
 
-    public static Import of(String fullName, boolean onDemand){
-        if(onDemand){
+    public static Import of(String fullName, boolean onDemand) {
+        if (onDemand) {
             fullName += ".*";
         }
         Name name = Name.of(fullName);

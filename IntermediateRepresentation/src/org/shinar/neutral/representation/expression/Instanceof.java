@@ -1,9 +1,6 @@
 package org.shinar.neutral.representation.expression;
 
 import lombok.Data;
-import org.shinar.neutral.representation.NeutralClass;
-import org.shinar.neutral.representation.NeutralCodeUnit;
-import org.shinar.neutral.representation.NeutralEnumeration;
 import org.shinar.neutral.representation.NeutralTypeDeclaration;
 
 /**

@@ -8,6 +8,6 @@ import org.shinar.neutral.representation.expression.Expression;
  */
 @Data
 public class Assert implements Statement {
-    protected Expression message=null;
-    protected Expression expression=null;
+    protected Expression message = null;
+    protected Expression expression = null;
 }

@@ -4,11 +4,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
 import org.eclipse.jdt.core.dom.*;
-import org.eclipse.jdt.core.dom.Statement;
 import org.shinar.neutral.representation.Method;
-import org.shinar.neutral.representation.NeutralTypeDeclaration;
-import org.shinar.neutral.representation.statement.*;
-import org.shinar.neutral.representation.statement.VariableDeclaration;
 
 import java.util.List;
 
@@ -35,14 +31,14 @@ public class MethodAnalyzer implements Analyzer<Method> {
     }
 
     protected void obtainName() {
-        if(codeType.isConstructor()){
+        if (codeType.isConstructor()) {
             representation.setConstructor(true);
         }
         representation.setName(codeType.getName().toString());
     }
 
     protected void obtainReturnType() {
-        if(codeType.getReturnType2()!=null) {
+        if (codeType.getReturnType2() != null) {
             representation.setReturnType(CodeUnitAnalyzer.classTypeData(codeType.getReturnType2()));
         }
     }
@@ -63,8 +59,8 @@ public class MethodAnalyzer implements Analyzer<Method> {
 
     protected void obtainCode() {
         Block block = codeType.getBody();
-        if(block==null) return;
-        for(Statement statement: (List<Statement>)block.statements()){
+        if (block == null) return;
+        for (Statement statement : (List<Statement>) block.statements()) {
             representation.getBlock().getStatements().add(StatementAnalyzer.analyze(statement));
         }
     }

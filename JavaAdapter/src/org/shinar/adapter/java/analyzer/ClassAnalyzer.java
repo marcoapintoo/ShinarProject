@@ -1,13 +1,8 @@
 package org.shinar.adapter.java.analyzer;
 
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.Setter;
-import org.eclipse.jdt.core.dom.*;
-import org.eclipse.jdt.core.dom.Expression;
-import org.shinar.neutral.representation.*;
-
-import java.util.List;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.shinar.neutral.representation.NeutralClass;
 
 /**
  * Created by marco on 20/06/14.
@@ -34,7 +29,9 @@ public class ClassAnalyzer extends CodeUnitAnalyzer<NeutralClass, TypeDeclaratio
     }
 
     public static NeutralClass analyze(TypeDeclaration type) {
-        if(TypePool.pool().containsKey(type)){return (NeutralClass)TypePool.pool().get(type);}
+        if (TypePool.pool().containsKey(type)) {
+            return (NeutralClass) TypePool.pool().get(type);
+        }
         ClassAnalyzer target = new ClassAnalyzer();
         target.setCodeType(type);
         target.obtainInformation();

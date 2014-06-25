@@ -1,58 +1,152 @@
 package org.shinar.utils;
 
+import org.apache.commons.lang3.ArrayUtils;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by marco on 21/06/14.
  */
-public class MultiMethod {
-    private static Object redispatch(final StackTraceElement targetMethod, Object targetObject, Object... args) throws NoDispatchedMethod {
-        try {
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface MultiMethod {
+    //String target();
+
+    public static class Apply {
+        private static Map<Object[], Method> cache = new HashMap<Object[], Method>();
+        private static Map<Object[], Object> cacheReturnValues = new HashMap<Object[], Object>();
+
+        private static Class<?> findClass(String className) {
+            try {
+                return Class.forName(className);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        private static Method searchMethod(Class<?> klazz, String methodName, List<Object> returnValues, Class<?>... types) {
+            Method method = null;
+            //TODO: Do not work for varargs
+            ArrayList<Method> methods = new ArrayList<Method>();
+            Object[] key = ArrayUtils.addAll(ArrayUtils.toArray(klazz, methodName), types);
+            returnValues.add(null);
+            if (cache.containsKey(key)) {
+                returnValues.set(0, cacheReturnValues.get(key));
+                return cache.get(key);
+            }
+
+            int identicalIndex = -1, j = 0;
+            Method baseMultimethod = null;
+            for (Method m : klazz.getDeclaredMethods()) {
+                Class<?>[] definedTypes = m.getParameterTypes();
+                if (m.getName().equals(methodName) && types.length == definedTypes.length) {
+                    boolean valid = true, equal = true;
+                    for (int i = 0; i < definedTypes.length; i++) {
+                        equal &= definedTypes[i] == types[i];
+                        if (!definedTypes[i].isAssignableFrom(types[i])) {
+                            valid = false;
+                            break;
+                        }
+                    }
+                    if (!valid) continue;
+                    if (m.isAnnotationPresent(MultiMethod.class)) {
+                        baseMultimethod = m;
+                        continue;
+                    }
+                    methods.add(m);
+                    if (equal) {
+                        identicalIndex = j;
+                        break;
+                    }
+                    j++;
+                }
+            }
+            int size = methods.size();
+            if (size == 0) {
+                try {
+                    returnValues.set(0, baseMultimethod == null ? null : baseMultimethod.getReturnType().newInstance());
+                } catch (Exception e) {
+                }
+            } else if (size == 1 && identicalIndex < 0) {
+                try {
+                    //returnValues.set(0, methods.get(0).getReturnType().newInstance());
+                    method = methods.get(0);
+                } catch (Exception e) {
+                }
+            } else {
+                int index = identicalIndex >= 0 ? identicalIndex : size - 2;
+                method = methods.get(index);
+            }
+            cache.put(key, method);
+            cacheReturnValues.put(key, returnValues.get(0));
+            return method;
+        }
+
+        private static Object invokeMethod(Class<?> klazz, String methodName, Object object, List<Object> returnValues, Object... args) throws InfiniteRecursionWarning {
             Class<?>[] classes = new Class<?>[args.length];
             for (int i = 0; i < args.length; i++) {
                 classes[i] = args[i].getClass();
             }
-            final Method method = Class.forName(targetMethod.getClassName())
-                    .getMethod(targetMethod.getMethodName(), classes);
-            if (method != null) {
-                return method.invoke(targetObject, args);
+            Method method = searchMethod(klazz, methodName, returnValues, classes);
+            if (method == null) {
+                throw new InfiniteRecursionWarning(klazz.toString() + "->" + methodName + ": Method is calling itself!");
             }
-        } catch (ClassNotFoundException e) {
-            throw new NoDispatchedMethod(e);
-        } catch (NoSuchMethodException e) {
-            throw new NoDispatchedMethod(e);
-        } catch (SecurityException e) {
-            throw new NoDispatchedMethod(e);
-        } catch (IllegalArgumentException e) {
-            throw new NoDispatchedMethod(e);
-        } catch (IllegalAccessException e) {
-            throw new NoDispatchedMethod(e);
-        } catch (InvocationTargetException e) {
-            throw new NoDispatchedMethod(e);
+            if (!method.isAccessible()) {
+                method.setAccessible(true);
+            }
+            try {
+                returnValues.set(0, method.invoke(object, args));
+            } catch (IllegalAccessException e) {
+                throw new InfiniteRecursionWarning(klazz.toString() + "->" + methodName + ": Illegal access!");
+            } catch (InvocationTargetException e) {
+                throw new InfiniteRecursionWarning(klazz.toString() + "->" + methodName + ": Invocation target wrong!");
+            }
+            //throw new InfiniteRecursionWarning();
+            return returnValues.get(0);
         }
-        throw new NoDispatchedMethod();
-    }
-    public static Object redispatch(Object targetObject, Object... args) throws NoDispatchedMethod {
-        final StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-        final StackTraceElement targetMethod = trace[2];
-        /* Only for tests :D
-        for(int i = 0; i < trace.length; i++) {
-            StackTraceElement t = trace[i];
-            System.out.print(i + ": ");
-            System.out.print(t.getClassName());
-            System.out.print(" ");
-            System.out.println(t.getMethodName());
-        }
-        System.out.println(targetMethod.getClassName());
-        System.out.println(targetMethod.getMethodName());
-        */
-        return redispatch(targetMethod, targetObject,args);
-    }
 
-    public static Object redispatchStatic(Object... args) throws NoDispatchedMethod {
-        final StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-        final StackTraceElement targetMethod = trace[2];
-        return redispatch(targetMethod, null,args);
+        public static Object _invoke(int stackTraceIndex, List<Object> returnValues, Object object, Object... args) throws InfiniteRecursionWarning {
+            final StackTraceElement[] trace = Thread.currentThread().getStackTrace();
+            final StackTraceElement targetMethod = trace[stackTraceIndex];
+            return invokeMethod(findClass(targetMethod.getClassName()),
+                    targetMethod.getMethodName(), object, returnValues, args);
+        }
+
+        public static Object invoke(Object object, Object... args) throws InfiniteRecursionWarning {
+            return _invoke(2 + 1, new ArrayList<Object>(), object, args);
+        }
+
+        public static Object invokeStatic(Object... args) throws InfiniteRecursionWarning {
+            return _invoke(2 + 1, new ArrayList<Object>(), null, args);
+        }
+
+
+        public static Object call(Object object, Object... args) {
+            final List<Object> returnValues = new ArrayList<Object>();
+            try {
+                return _invoke(2 + 1, returnValues, object, args);
+            } catch (InfiniteRecursionWarning infiniteRecursionWarning) {
+            }
+            return returnValues.get(0);
+        }
+
+        public static Object callStatic(Object... args) {
+            final List<Object> returnValues = new ArrayList<Object>();
+            try {
+                return _invoke(2 + 1, returnValues, null, args);
+            } catch (InfiniteRecursionWarning infiniteRecursionWarning) {
+            }
+            return returnValues.get(0);
+        }
     }
 }
+

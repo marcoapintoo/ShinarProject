@@ -7,29 +7,47 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jface.text.Document;
 import org.shinar.adapter.java.analyzer.CompilationUnitAnalyzer;
-import org.shinar.formatter.nimrod.CodeFormatter;
+import org.shinar.adapter.neutral.BaseAdapter;
+import org.shinar.formatter.nimrod.NimrodFormatter;
+import org.shinar.neutral.representation.CodeGroup;
 import org.shinar.neutral.representation.NeutralClass;
 import org.shinar.neutral.representation.NeutralCodeUnit;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Created by marco on 20/06/14.
  */
-interface A<T extends Object & Serializable>{}
-interface A2{}
-interface B extends A<String>, A2{}
-class X{
-    private static void o(){}
-}
 @Data
-public class Adapter implements Serializable {
+public class JavaAdapter extends BaseAdapter {
+
+    private Document document;
+
+    private CompilationUnit getAST(String code) {
+        document = new Document(code);
+        ASTParser parser = ASTParser.newParser(AST.JLS4);
+        Map options = JavaCore.getOptions();
+        options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_7);
+        options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_7);
+        options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_7);
+        parser.setCompilerOptions(options);
+        parser.setSource(document.get().toCharArray());
+        return (CompilationUnit) parser.createAST(null);
+    }
+
+    @Override
+    public CodeGroup parseString(String code) {
+        CodeGroup group = new CodeGroup();
+        group.getUnits().addAll(CompilationUnitAnalyzer.analyze(getAST(code)));
+        return group;
+    }
+
     private CompilationUnit compilationUnit;
-    public void parse(){
+
+    public void parse() {
         String code = "package org.uno; import java.util.List;import java.io.Serializable;\n" +
-                "interface Foo{} \n"+
+                "interface Foo{} \n" +
                 "\nabstract class X implements Foo, Foo2<String>, Serializable, Foo2< Foo2< Foo2<String> > >\n{\n\n" +
                 "\t//private int[] e;\n" +
                 "\t//private int[] e1={1,2,3,4};\n" +
@@ -43,12 +61,11 @@ public class Adapter implements Serializable {
                 "if(i%2==0){System.out.print(\"Par!\");}else{System.out.println(i+\" \");}\t" +
                 "}\n\n" +
                 "}\n\n" +
-                "interface Foo2<T extends Object & Serializable> {} \n"+
-                "interface Foo3 extends Foo2<String>, Foo {} \n"+
+                "interface Foo2<T extends Object & Serializable> {} \n" +
+                "interface Foo3 extends Foo2<String>, Foo {} \n" +
                 "enum Example{Data1, Data2, Data3}\n" +
                 "protected class Y extends X{}\n" +
-                "interface Other{public String methodName(); }"
-        ;
+                "interface Other{public String methodName(); }";
         Document document = new Document(code);
         System.out.println(code);
         ASTParser parser = ASTParser.newParser(AST.JLS4);
@@ -58,18 +75,22 @@ public class Adapter implements Serializable {
         options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_7);
         parser.setCompilerOptions(options);
         parser.setSource(document.get().toCharArray());
-        compilationUnit = (CompilationUnit)parser.createAST(null);
-        CodeFormatter codeFormatter = new CodeFormatter();
+        compilationUnit = (CompilationUnit) parser.createAST(null);
+        NimrodFormatter codeFormatter = new NimrodFormatter();
         List<NeutralCodeUnit> units = CompilationUnitAnalyzer.analyze(compilationUnit);
-        NeutralClass klazz = (NeutralClass)units.get(1);
+        NeutralClass klazz = (NeutralClass) units.get(1);
         System.out.println(codeFormatter.format(klazz));
         int i = 0;
     }
 
-    private void obtainPackage(){}
-    private void obtainImports(){
+    private void obtainPackage() {
+    }
+
+    private void obtainImports() {
 
     }
-    private void obtainTypes(){}
+
+    private void obtainTypes() {
+    }
 
 }

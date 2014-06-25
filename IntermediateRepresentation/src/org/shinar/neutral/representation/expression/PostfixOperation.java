@@ -7,10 +7,11 @@ import lombok.Data;
  */
 @Data
 public class PostfixOperation implements Expression {
-    public enum Operator{
+    public enum Operator {
         AutoDecrement,
         AutoIncrement
     }
+
     protected Operator operator;
     protected Expression operand;
 }

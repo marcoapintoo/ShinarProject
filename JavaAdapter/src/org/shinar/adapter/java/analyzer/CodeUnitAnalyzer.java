@@ -5,17 +5,16 @@ import lombok.Data;
 import lombok.Setter;
 import org.eclipse.jdt.core.dom.*;
 import org.shinar.neutral.representation.*;
+import org.shinar.utils.InfiniteRecursionWarning;
 import org.shinar.utils.MultiMethod;
-import org.shinar.utils.NoDispatchedMethod;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by marco on 20/06/14.
  */
 @Data
-public class CodeUnitAnalyzer<T extends NeutralCodeUnit, V extends AbstractTypeDeclaration>  implements Analyzer<T> {
+public class CodeUnitAnalyzer<T extends NeutralCodeUnit, V extends AbstractTypeDeclaration> implements Analyzer<T> {
     protected V codeType;
     @Setter(AccessLevel.PROTECTED)
     protected T representation;
@@ -41,7 +40,8 @@ public class CodeUnitAnalyzer<T extends NeutralCodeUnit, V extends AbstractTypeD
     protected void obtainModifiersData() {
         obtainModifiersData(representation, (List<Modifier>) codeType.modifiers());
     }
-    public static <T extends NeutralObject> void obtainModifiersData(T representation, List<Modifier> modifiers){
+
+    public static <T extends NeutralObject> void obtainModifiersData(T representation, List<Modifier> modifiers) {
         representation.getAccess().clear();
         representation.setInstantiation(ObjectInstantiation.Instance);
         representation.setVisibility(ObjectVisibility.Package);
@@ -50,11 +50,11 @@ public class CodeUnitAnalyzer<T extends NeutralCodeUnit, V extends AbstractTypeD
                 representation.getAccess().add(ObjectAccess.Final);
             } else if (modifier.getKeyword() == Modifier.ModifierKeyword.NATIVE_KEYWORD) {
                 representation.getAccess().add(ObjectAccess.Native);
-            }else if (modifier.getKeyword() == Modifier.ModifierKeyword.STATIC_KEYWORD) {
+            } else if (modifier.getKeyword() == Modifier.ModifierKeyword.STATIC_KEYWORD) {
                 representation.setInstantiation(ObjectInstantiation.Static);
             } else if (modifier.getKeyword() == Modifier.ModifierKeyword.ABSTRACT_KEYWORD) {
                 representation.setInstantiation(ObjectInstantiation.AbstractInstance);
-            }else if (modifier.getKeyword() == Modifier.ModifierKeyword.PUBLIC_KEYWORD) {
+            } else if (modifier.getKeyword() == Modifier.ModifierKeyword.PUBLIC_KEYWORD) {
                 representation.setVisibility(ObjectVisibility.Public);
             } else if (modifier.getKeyword() == Modifier.ModifierKeyword.PRIVATE_KEYWORD) {
                 representation.setVisibility(ObjectVisibility.Private);
@@ -120,8 +120,8 @@ public class CodeUnitAnalyzer<T extends NeutralCodeUnit, V extends AbstractTypeD
 
     protected void obtainParent() {
         //TODO: Do more OO
-        if(codeType instanceof TypeDeclaration) {
-            Type parent = ((TypeDeclaration)codeType).getSuperclassType();
+        if (codeType instanceof TypeDeclaration) {
+            Type parent = ((TypeDeclaration) codeType).getSuperclassType();
             if (parent != null) {
                 representation.getParents().add(classTypeData(parent));
                 return;
@@ -134,11 +134,11 @@ public class CodeUnitAnalyzer<T extends NeutralCodeUnit, V extends AbstractTypeD
     protected void obtainInterfaces() {
         //TODO: Do more OO
         List<Type> interfaces = null;
-        if(codeType instanceof TypeDeclaration) {
+        if (codeType instanceof TypeDeclaration) {
             interfaces = (List<Type>) ((TypeDeclaration) codeType).superInterfaceTypes();
-        }else if(codeType instanceof EnumDeclaration){
+        } else if (codeType instanceof EnumDeclaration) {
             interfaces = (List<Type>) ((EnumDeclaration) codeType).superInterfaceTypes();
-        }else{
+        } else {
             throw new RuntimeException("This is a valid declaration type? I will not handle that. Sorry :(");
         }
         for (Type interfaceDeclaration : interfaces) {
@@ -148,15 +148,16 @@ public class CodeUnitAnalyzer<T extends NeutralCodeUnit, V extends AbstractTypeD
 
     protected void obtainGenericParameters() {
         //TODO: Do more OO
-        if(codeType instanceof TypeDeclaration) {
-            obtainGenericParameters((List<TypeParameter>) ((TypeDeclaration)codeType).typeParameters(), representation.getTypeParameters());
+        if (codeType instanceof TypeDeclaration) {
+            obtainGenericParameters((List<TypeParameter>) ((TypeDeclaration) codeType).typeParameters(), representation.getTypeParameters());
         }
     }
-    public static void obtainGenericParameters(List<TypeParameter> parameters, List<NeutralCodeUnit> typeParameters){
+
+    public static void obtainGenericParameters(List<TypeParameter> parameters, List<NeutralCodeUnit> typeParameters) {
         //List<TypeParameter> parameters = (List<TypeParameter>) ((TypeDeclaration)codeType).typeParameters();
         if (parameters.size() != 0) {
             for (TypeParameter parameter : parameters) {
-                NeutralCodeUnit genericParameter =classTypeData(parameter);
+                NeutralCodeUnit genericParameter = classTypeData(parameter);
                 for (Type typeDerived : (List<Type>) parameter.typeBounds()) {
                     genericParameter.getParents().add(classTypeData(typeDerived));
                 }
@@ -168,15 +169,15 @@ public class CodeUnitAnalyzer<T extends NeutralCodeUnit, V extends AbstractTypeD
 
     protected void obtainFields() {
         //for(FieldDeclaration field :codeType.getFields())
-        for(Object declaration: codeType.bodyDeclarations()){
-            if(declaration instanceof FieldDeclaration){
+        for (Object declaration : codeType.bodyDeclarations()) {
+            if (declaration instanceof FieldDeclaration) {
                 FieldDeclaration field = (FieldDeclaration) declaration;
-                for(VariableDeclarationFragment varDeclaration: (List<VariableDeclarationFragment>)field.fragments()){
+                for (VariableDeclarationFragment varDeclaration : (List<VariableDeclarationFragment>) field.fragments()) {
                     Field fieldRepresentation = new Field();
                     fieldRepresentation.setName(varDeclaration.getName().toString());
                     fieldRepresentation.setType(CodeUnitAnalyzer.classTypeData(field.getType()));
                     CodeUnitAnalyzer.obtainModifiersData(fieldRepresentation, (List<Modifier>) field.modifiers());
-                    if(varDeclaration.getInitializer()!=null) {
+                    if (varDeclaration.getInitializer() != null) {
                         fieldRepresentation.setDefaultExpression(ExpressionAnalyzer.analyze(varDeclaration.getInitializer()));
                     }
                     //Expression expression = varDeclaration.getInitializer();
@@ -189,20 +190,21 @@ public class CodeUnitAnalyzer<T extends NeutralCodeUnit, V extends AbstractTypeD
 
     protected void obtainMethods() {
         //for(MethodDeclaration method :codeType.getMethods())
-        for(Object declaration: codeType.bodyDeclarations()){
-            if(declaration instanceof MethodDeclaration){
-                representation.getMethods().add(MethodAnalyzer.analyze((MethodDeclaration)declaration));
+        for (Object declaration : codeType.bodyDeclarations()) {
+            if (declaration instanceof MethodDeclaration) {
+                representation.getMethods().add(MethodAnalyzer.analyze((MethodDeclaration) declaration));
             }
         }
     }
 
     public static NeutralTypeDeclaration classTypeData(Type type) {
-        try{
-            return (NeutralTypeDeclaration) MultiMethod.redispatchStatic(type);
-        }catch (NoDispatchedMethod e) {
-            throw new RuntimeException("Wrong type!" + type.toString()+" " + type.getClass().toString());
+        try {
+            return (NeutralTypeDeclaration) MultiMethod.Apply.invokeStatic(type);
+        } catch (InfiniteRecursionWarning e) {
+            throw new RuntimeException("Wrong type!" + type.toString() + " " + type.getClass().toString());
         }
     }
+
     public static NeutralTypeDeclaration classTypeData(PrimitiveType type) {
         NeutralTypeDeclaration typeDeclaration = new NeutralTypeDeclaration();
         typeDeclaration.setName(type.getPrimitiveTypeCode().toString());
@@ -212,6 +214,7 @@ public class CodeUnitAnalyzer<T extends NeutralCodeUnit, V extends AbstractTypeD
         typeDeclaration.setDefinition(false);
         return typeDeclaration;
     }
+
     public static NeutralTypeDeclaration classTypeData(SimpleType type) {
         NeutralTypeDeclaration typeDeclaration = new NeutralTypeDeclaration();
         typeDeclaration.setName(type.getName().toString());

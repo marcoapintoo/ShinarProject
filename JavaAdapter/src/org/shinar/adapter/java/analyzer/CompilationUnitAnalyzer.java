@@ -3,8 +3,13 @@ package org.shinar.adapter.java.analyzer;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
-import org.eclipse.jdt.core.dom.*;
-import org.shinar.neutral.representation.*;
+import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.ImportDeclaration;
+import org.eclipse.jdt.core.dom.PackageDeclaration;
+import org.shinar.neutral.representation.Directory;
+import org.shinar.neutral.representation.Import;
+import org.shinar.neutral.representation.NeutralCodeUnit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +28,6 @@ public class CompilationUnitAnalyzer implements Analyzer<List<NeutralCodeUnit>> 
     protected List<NeutralCodeUnit> representation = new ArrayList<NeutralCodeUnit>();
 
     protected CompilationUnitAnalyzer() {
-
     }
 
     @Override

@@ -8,9 +8,10 @@ import lombok.Data;
 @Data
 public class NullLiteral extends Literal<Object> {
     @Override
-    public void setValue(Object o){
+    public void setValue(Object o) {
 
     }
+
     @Override
     public Object getValue() {
         return null;

@@ -1,0 +1,22 @@
+#Shinar Project
+
+Nimrod appears as a potential language at a low-level programming but with some nice features à la Python.
+But it lacks from one single and important detail: a complete library.
+Of course, there is a base library. But, I think that is not enough for the common-applications.
+
+Shinar is born to provide a tool to create a complementary library based on open source code wrote in Java.
+It takes tools made in Java, and processes it to generate Nimrod code.
+Support for Swing/SWT are not planned.
+
+A main objective is not creating a fool code translator,
+otherwise a real code analyzer using powerful tools like Eclipse JDT, and others.
+
+## Some questions
+
+### Why the project's name is Shinar?
+In the Bible, Shinar is the kingdom of Nimrod.
+### Why was selected Java library?
+Because Java is easier to analyze than C, and far more from Python (I'm an inveterate pythonist).
+
+## Important note
+The project is not finished yet! Its structure could change in any moment.

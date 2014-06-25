@@ -10,14 +10,14 @@ public class Directory {
     private String name = "";
     private Directory parent = null;
 
-    public String getFullName(){
-        return parent !=null? parent.getFullName() + "." + name: name;
+    public String getFullName() {
+        return parent != null ? parent.getFullName() + "." + name : name;
     }
 
-    public static Directory of(String fullName){
+    public static Directory of(String fullName) {
         String[] names = fullName.split("\\.");
         Directory last = null, current = null;
-        for(String name: names){
+        for (String name : names) {
             current = new Directory();
             current.setName(name);
             current.setParent(last);

@@ -21,6 +21,7 @@ public class Assignment implements Expression {
         RightShiftAssign,
         TripleRightShiftAssign
     }
+
     protected Expression leftExpression;
     protected Operator operator;
     protected Expression rightExpression;

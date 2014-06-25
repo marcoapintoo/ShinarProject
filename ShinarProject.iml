@@ -16,6 +16,9 @@
     <orderEntry type="module" module-name="JavaAdapter" />
     <orderEntry type="module" module-name="Utils" />
     <orderEntry type="library" name="org.apache.commons:commons-lang3:3.3.2" level="project" />
+    <orderEntry type="library" name="junit:junit:4.11" level="project" />
+    <orderEntry type="module" module-name="NeutralAdapter" />
+    <orderEntry type="module" module-name="NeutralFormatter" />
   </component>
 </module>
 

@@ -1,15 +1,12 @@
 package org.shinar.adapter.java.analyzer;
 
 import org.eclipse.jdt.core.dom.*;
-import org.eclipse.jdt.internal.compiler.ast.CaseStatement;
 import org.shinar.neutral.representation.NeutralCodeUnit;
-import org.shinar.neutral.representation.NeutralTypeDeclaration;
 import org.shinar.neutral.representation.statement.*;
 import org.shinar.neutral.representation.statement.Statement;
-import org.shinar.neutral.representation.statement.TypeDeclaration;
 import org.shinar.neutral.representation.statement.VariableDeclaration;
+import org.shinar.utils.InfiniteRecursionWarning;
 import org.shinar.utils.MultiMethod;
-import org.shinar.utils.NoDispatchedMethod;
 
 import java.util.List;
 
@@ -19,8 +16,8 @@ import java.util.List;
 public class StatementAnalyzer {
     public static Statement analyze(org.eclipse.jdt.core.dom.Statement statement) {
         try {
-            return (Statement) MultiMethod.redispatchStatic(statement);
-        } catch (NoDispatchedMethod e) {
+            return (Statement) MultiMethod.Apply.invokeStatic(statement);
+        } catch (InfiniteRecursionWarning e) {
             throw new RuntimeException(e);
         }
     }
@@ -134,7 +131,7 @@ public class StatementAnalyzer {
         IfStatement lastIfStatement = null;
         boolean isDefault = false;
         //for (Statement caseBlock : (List<Statement>) statement.statements()) {
-        for(int i =0; i<statement.statements().size(); i++){
+        for (int i = 0; i < statement.statements().size(); i++) {
             Statement switchStatement = (Statement) statement.statements().get(i);
             if (switchStatement instanceof SwitchCase) {
                 SwitchCase switchCase = (SwitchCase) switchStatement;
@@ -146,7 +143,7 @@ public class StatementAnalyzer {
                     conditional.setRightOperand(switchCase.getExpression());
                     ifStatement.setExpression(conditional);
                     ifStatement.setThenStatement(ifStatement.getAST().newBlock());
-                    if(i!=0 && !(statement.statements().get(i-1) instanceof BreakStatement) ){
+                    if (i != 0 && !(statement.statements().get(i - 1) instanceof BreakStatement)) {
                         Assignment assignment = whileStatement.getAST().newAssignment();
                         //assignment.getLeftHandSide(whileStatement.getAST().newName());
                         assignment.setLeftHandSide(conditionName);
@@ -160,19 +157,19 @@ public class StatementAnalyzer {
                     isDefault = false;
                 } else {
                     isDefault = true;
-                    if(lastIfStatement==null){
-                        lastIfStatement=whileBlock.getAST().newIfStatement();
+                    if (lastIfStatement == null) {
+                        lastIfStatement = whileBlock.getAST().newIfStatement();
                         lastIfStatement.setExpression(whileStatement.getAST().newBooleanLiteral(false));
                         lastIfStatement.setThenStatement(lastIfStatement.getAST().newBlock());
                     }
-                    lastIfStatement.setElseStatement(lastIfStatement .getAST().newBlock());
+                    lastIfStatement.setElseStatement(lastIfStatement.getAST().newBlock());
                 }
             } else {
-                Block currentBlock = (Block) (isDefault? lastIfStatement.getElseStatement(): lastIfStatement.getThenStatement());
+                Block currentBlock = (Block) (isDefault ? lastIfStatement.getElseStatement() : lastIfStatement.getThenStatement());
                 currentBlock.statements().add(switchStatement);
             }
         }
-        if(lastIfStatement!=null){
+        if (lastIfStatement != null) {
             whileBlock.statements().add(lastIfStatement);
         }
         switchCounter++;

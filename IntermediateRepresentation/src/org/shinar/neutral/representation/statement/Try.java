@@ -14,5 +14,6 @@ import java.util.List;
 public class Try implements Statement {
     protected CodeBlock tryBlock;
     protected CodeBlock finallyBlock;
-    @Setter(AccessLevel.PROTECTED) protected List<TryCatch> catches = new ArrayList<TryCatch>();
+    @Setter(AccessLevel.PROTECTED)
+    protected List<TryCatch> catches = new ArrayList<TryCatch>();
 }

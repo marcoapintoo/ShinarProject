@@ -13,6 +13,10 @@
     <orderEntry type="module" module-name="NimrodFormatter" />
     <orderEntry type="module" module-name="Utils" />
     <orderEntry type="library" name="org.apache.commons:commons-lang3:3.3.2" level="project" />
+    <orderEntry type="library" name="procyon-reflection-0.5.25" level="project" />
+    <orderEntry type="library" name="org.mvel:mvel:2.0M2" level="project" />
+    <orderEntry type="module" module-name="NeutralAdapter" />
+    <orderEntry type="library" name="junit:junit:4.11" level="project" />
   </component>
 </module>
 

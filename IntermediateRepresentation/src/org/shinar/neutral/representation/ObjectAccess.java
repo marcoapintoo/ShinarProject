@@ -1,7 +1,5 @@
 package org.shinar.neutral.representation;
 
-import lombok.Value;
-
 /**
  * Created by marco on 18/06/14.
  */

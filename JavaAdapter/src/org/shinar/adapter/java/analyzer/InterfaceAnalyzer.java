@@ -1,10 +1,7 @@
 package org.shinar.adapter.java.analyzer;
 
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.Setter;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.shinar.neutral.representation.NeutralClass;
 import org.shinar.neutral.representation.NeutralInterface;
 
 /**
@@ -12,7 +9,7 @@ import org.shinar.neutral.representation.NeutralInterface;
  */
 @Data
 //Only for semantics information
-public class InterfaceAnalyzer extends CodeUnitAnalyzer<NeutralInterface, TypeDeclaration>{
+public class InterfaceAnalyzer extends CodeUnitAnalyzer<NeutralInterface, TypeDeclaration> {
     protected InterfaceAnalyzer() {
         representation = new NeutralInterface();
     }

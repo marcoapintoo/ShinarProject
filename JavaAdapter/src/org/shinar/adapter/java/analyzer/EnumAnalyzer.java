@@ -1,17 +1,22 @@
 package org.shinar.adapter.java.analyzer;
 
-import org.eclipse.jdt.core.dom.*;
-import org.shinar.neutral.representation.*;
+import org.eclipse.jdt.core.dom.EnumConstantDeclaration;
+import org.eclipse.jdt.core.dom.EnumDeclaration;
+import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.Modifier;
+import org.shinar.neutral.representation.EnumeratedField;
+import org.shinar.neutral.representation.NeutralEnumeration;
 
 import java.util.List;
 
 /**
  * Created by marco on 20/06/14.
  */
-public class EnumAnalyzer extends CodeUnitAnalyzer<NeutralEnumeration, EnumDeclaration>{
-    protected EnumAnalyzer(){
+public class EnumAnalyzer extends CodeUnitAnalyzer<NeutralEnumeration, EnumDeclaration> {
+    protected EnumAnalyzer() {
         representation = new NeutralEnumeration();
     }
+
     @Override
     public void obtainInformation() {
         /*obtainName();
@@ -23,11 +28,11 @@ public class EnumAnalyzer extends CodeUnitAnalyzer<NeutralEnumeration, EnumDecla
     }
 
     protected void obtainEnumFields() {
-        for(EnumConstantDeclaration declaration: (List<EnumConstantDeclaration>)codeType.enumConstants()){
+        for (EnumConstantDeclaration declaration : (List<EnumConstantDeclaration>) codeType.enumConstants()) {
             EnumeratedField field = new EnumeratedField();
             CodeUnitAnalyzer.obtainModifiersData(field, (List<Modifier>) declaration.modifiers());
             field.setName(declaration.getName().toString());
-            for(Expression expression: (List<Expression>)declaration.arguments()){
+            for (Expression expression : (List<Expression>) declaration.arguments()) {
                 field.getArguments().add(ExpressionAnalyzer.analyze(expression));
             }
             //TODO: Handle anonymous class
@@ -37,7 +42,9 @@ public class EnumAnalyzer extends CodeUnitAnalyzer<NeutralEnumeration, EnumDecla
 
 
     public static NeutralEnumeration analyze(EnumDeclaration type) {
-        if(TypePool.pool().containsKey(type)){return (NeutralEnumeration)TypePool.pool().get(type);}
+        if (TypePool.pool().containsKey(type)) {
+            return (NeutralEnumeration) TypePool.pool().get(type);
+        }
         EnumAnalyzer target = new EnumAnalyzer();
         target.setCodeType(type);
         target.obtainInformation();
