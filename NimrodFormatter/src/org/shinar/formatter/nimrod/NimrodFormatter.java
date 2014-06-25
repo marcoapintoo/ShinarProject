@@ -33,6 +33,12 @@ public class NimrodFormatter implements BaseFormatter {
         return builder.toString();
     }
 
+    private void commonParameters(HashMap<String, Object> map, NeutralObject object){
+        map.put("tabs", tabs());
+        map.put("name", object.getName());
+        map.put("visibility", object.getVisibility() == ObjectVisibility.Public ? "*" : "");
+    }
+
     @Override
     @MultiMethod
     public String format(NeutralObject object) {
@@ -57,13 +63,11 @@ public class NimrodFormatter implements BaseFormatter {
     @Override
     public String format(NeutralClass klazz) {
         HashMap<String, Object> map = new HashMap<String, Object>();
-        map.put("tabs", tabs());
-        map.put("visibility", klazz.getVisibility() == ObjectVisibility.Public ? "*" : "");
-        map.put("methodName", klazz.getName());
+        commonParameters(map, klazz);
         //map.put("ancestor", "TObject");
         map.put("ancestor", klazz.getParents().size() > 0 ? klazz.getParents().get(0).getName() : "TObject");
         StringBuilder code = new StringBuilder((String) TemplateRuntime.eval(
-                "@{tabs}type @{methodName}@{visibility} = object of @{ancestor}\n",
+                "@{tabs}type @{name}@{visibility} = object of @{ancestor}\n",
                 map));
         tabular++;
         for (Field field : klazz.getFields()) {
@@ -90,13 +94,11 @@ public class NimrodFormatter implements BaseFormatter {
     @Override
     public String format(Method method) {
         HashMap<String, Object> map = new HashMap<String, Object>();
-        map.put("tabs", tabs(0));
-        map.put("visibility", method.getVisibility() == ObjectVisibility.Public ? "*" : "");
-        map.put("methodName", method.getName());
+        commonParameters(map, method);
         map.put("return_type", (method.getReturnType().isPrimitive() ? "ref " : "") + method.getReturnType().getName());
         map.put("params", "");
         String code = (String) TemplateRuntime.eval(
-                "@{tabs}proc @{methodName}@{visibility}(@{params}): @{return_type}=\n",
+                "@{tabs}proc @{name}@{visibility}(@{params}): @{return_type}=\n",
                 map);
         return code;
     }
@@ -104,12 +106,10 @@ public class NimrodFormatter implements BaseFormatter {
     @Override
     public String format(Field field) {
         HashMap<String, Object> map = new HashMap<String, Object>();
-        map.put("tabs", tabs(0));
-        map.put("visibility", field.getVisibility() == ObjectVisibility.Public ? "*" : "");
-        map.put("methodName", field.getName());
+        commonParameters(map, field);
         map.put("type", (field.getType().isPrimitive() ? "ref " : "") + field.getType().getName());
         String code = (String) TemplateRuntime.eval(
-                "@{tabs}@{methodName}@{visibility}: @{type}\n",
+                "@{tabs}@{name}@{visibility}: @{type}\n",
                 map);
         return code;
     }
