@@ -8,10 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by marco on 21/06/14.
@@ -94,7 +91,7 @@ public @interface MultiMethod {
         private static Object invokeMethod(Class<?> klazz, String methodName, Object object, List<Object> returnValues, Object... args) throws InfiniteRecursionWarning {
             Class<?>[] classes = new Class<?>[args.length];
             for (int i = 0; i < args.length; i++) {
-                classes[i] = args[i].getClass();
+                classes[i] = args[i]==null? Objects.class: args[i].getClass();
             }
             Method method = searchMethod(klazz, methodName, returnValues, classes);
             if (method == null) {
@@ -106,9 +103,12 @@ public @interface MultiMethod {
             try {
                 returnValues.set(0, method.invoke(object, args));
             } catch (IllegalAccessException e) {
-                throw new InfiniteRecursionWarning(klazz.toString() + "->" + methodName + ": Illegal access!");
+                throw new InfiniteRecursionWarning(klazz.toString() + "->" + methodName + ": Illegal access!", e);
             } catch (InvocationTargetException e) {
-                throw new InfiniteRecursionWarning(klazz.toString() + "->" + methodName + ": Invocation target wrong!");
+                Throwable cause;
+                for(cause = e.getCause(); cause instanceof RuntimeException; cause = cause.getCause());
+                throw new InfiniteRecursionWarning(klazz.toString() + "->" + methodName + ": Invocation target wrong!", cause);
+                //throw new InfiniteRecursionWarning(klazz.toString() + "->" + methodName + ": Invocation target wrong!", e.getTargetException());
             }
             //throw new InfiniteRecursionWarning();
             return returnValues.get(0);

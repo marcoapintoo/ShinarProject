@@ -1,6 +1,14 @@
 package org.uno;
 
+import org.eclipse.jdt.core.dom.ASTVisitor;
+
 import java.io.Serializable;
+
+interface AFoo {
+    int constant = 12;
+    public int value(int i);
+    void value2(double d);
+}
 
 interface Foo {
 }
@@ -17,6 +25,12 @@ abstract class X implements
     public int ba = 1;
 
     public void deleteme() {
+        if (1 % 2 == 0) {
+            System.out.print("Never shown...");
+        }else {
+            ASTVisitor
+            System.out.print("Always shown...");
+        }
         int i = 0;
         i++;
         i = i * 10;

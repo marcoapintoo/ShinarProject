@@ -14,8 +14,11 @@ otherwise a real code analyzer using powerful tools like Eclipse JDT, and others
 ## Some questions
 
 ### Why the project's name is Shinar?
+
 In the Bible, Shinar is the kingdom of Nimrod.
+
 ### Why was selected Java library?
+
 Because Java is easier to analyze than C, and far more from Python (I'm an inveterate pythonist).
 
 ## Important note
