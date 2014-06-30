@@ -1,6 +1,8 @@
 package org.shinar;
 
 
+import lombok.Data;
+
 interface INothing<T extends Caller>{
     void call(T o);
 }
@@ -62,7 +64,9 @@ class UltraCalling implements ISubCaller0{//ISubCaller1, ISubCaller2{
 interface A<T extends Caller>{
     void set(T o);
 }
+@Data
 class ABC{
+    int a;
 public <T extends Caller> void set(T o){
 
 }
@@ -80,5 +84,7 @@ public class Main {
         String result = NimrodFactory.codeOf(adapter.parseFile("Tests", "Example01.java"));
 
         System.out.println(result);*/
+        ABC a = new ABC();
+
     }
 }
