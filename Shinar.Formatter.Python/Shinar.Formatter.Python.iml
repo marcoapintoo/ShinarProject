@@ -7,6 +7,10 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="Shinar.Language.Core" />
+    <orderEntry type="library" name="lombok-1.12.6" level="project" />
+    <orderEntry type="module" module-name="Utils" />
+    <orderEntry type="library" name="org.apache.commons:commons-lang3:3.3.2" level="project" />
   </component>
 </module>
 

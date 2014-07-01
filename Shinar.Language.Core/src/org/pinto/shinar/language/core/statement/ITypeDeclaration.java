@@ -6,6 +6,6 @@ import org.pinto.shinar.language.core.structure.IType;
 /**
  * Created by marco on 29/06/14.
  */
-public interface ITypeDeclaration extends IStatement, IType {
-
+public interface ITypeDeclaration extends IStatement {
+    IType getDeclaredType();
 }

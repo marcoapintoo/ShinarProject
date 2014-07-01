@@ -5,4 +5,6 @@ package org.pinto.shinar.language.core.structure;
  */
 public interface IContext {
     INamespace getCurrentNamespace();
+
+    IType getCurrentType();
 }

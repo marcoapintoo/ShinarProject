@@ -1,5 +1,6 @@
 package org.pinto.shinar.language.core.structure;
 
+import org.pinto.shinar.language.core.expression.IMethodParameterDeclaration;
 import org.pinto.shinar.language.core.statement.IBlock;
 
 /**
@@ -8,7 +9,7 @@ import org.pinto.shinar.language.core.statement.IBlock;
 public interface IMethod extends IElement, IWithGenerics {
     ITypeReference getReturnType();
 
-    Iterable<Object> getParameters();
+    Iterable<IMethodParameterDeclaration> getParameters();
 
     boolean hasParameters();
 

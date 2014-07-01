@@ -11,4 +11,6 @@ public interface IType extends IWithFlags, IWithName, IWithContext {
     boolean hasElements();
 
     ITypeReference getTypeReference(ITypeReference... genericArguments);
+
+    <T> T visit(IStructureVisitor<T> visitor);
 }

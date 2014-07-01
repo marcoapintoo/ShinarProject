@@ -1,15 +1,20 @@
 package org.pinto.shinar.language.intermediate.statement;
-import org.pinto.shinar.language.core.statement.*;
-import lombok.*;
-import org.pinto.shinar.language.core.structure.IContext;
-import org.pinto.shinar.language.core.structure.IStatement;
+
+import lombok.Data;
+import org.pinto.shinar.language.core.statement.IStatementVisitor;
+import org.pinto.shinar.language.core.statement.ISwitch;
 import org.pinto.shinar.language.intermediate.structure.Context;
-import org.pinto.shinar.language.intermediate.structure.Expression;
 
 /**
  * Created by marco on 29/06/14.
  */
 @Data
-public class Switch implements ISwitch{
+public class Switch implements ISwitch {
     private Context context;
+
+
+    @Override
+    public <T> T visit(IStatementVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 }

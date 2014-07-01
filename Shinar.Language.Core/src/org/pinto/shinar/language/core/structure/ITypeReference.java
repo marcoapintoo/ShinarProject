@@ -3,7 +3,7 @@ package org.pinto.shinar.language.core.structure;
 /**
  * Created by marco on 29/06/14.
  */
-public interface ITypeReference extends IWithGenericArguments, IWithContext {
+public interface ITypeReference extends IStructureFragment, IWithGenericArguments, IWithContext {
     IType getType();
 
     boolean isGeneric();
@@ -11,4 +11,5 @@ public interface ITypeReference extends IWithGenericArguments, IWithContext {
     boolean isArray();
 
     int arrayDimensions(); //-1 if it's unknown
+
 }

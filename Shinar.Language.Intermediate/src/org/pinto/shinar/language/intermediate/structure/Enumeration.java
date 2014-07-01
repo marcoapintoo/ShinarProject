@@ -1,50 +1,37 @@
 package org.pinto.shinar.language.intermediate.structure;
+
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.Setter;
 import org.pinto.shinar.language.core.structure.*;
-import lombok.*;
+
+import java.util.ArrayList;
 
 /**
  * Created by marco on 29/06/14.
  */
 @Data
-public class Enumeration implements IEnumeration{
-    @Override
-    public Iterable<IType> getParents() {
-        return null;
-    }
+public class Enumeration extends Type implements IEnumeration {
+    @Setter(AccessLevel.PROTECTED)
+    private ArrayList<IType> parents = new ArrayList<IType>();
+    @Setter(AccessLevel.PROTECTED)
+    private ArrayList<IType> implementations = new ArrayList<IType>();
+    @Setter(AccessLevel.PROTECTED)
+    private ArrayList<IEnumField> values = new ArrayList<IEnumField>();
 
     @Override
     public boolean hasParents() {
-        return false;
-    }
-
-    @Override
-    public Iterable<IType> getImplementations() {
-        return null;
+        return parents.size() == 0;
     }
 
     @Override
     public boolean hasImplementations() {
-        return false;
-    }
-
-    @Override
-    public Iterable<IEnumField> getValues() {
-        return null;
+        return implementations.size() == 0;
     }
 
     @Override
     public boolean hasValues() {
-        return false;
-    }
-
-    @Override
-    public Iterable<IElement> getElements() {
-        return null;
-    }
-
-    @Override
-    public boolean hasElements() {
-        return false;
+        return values.size() == 0;
     }
 
     @Override
@@ -53,22 +40,7 @@ public class Enumeration implements IEnumeration{
     }
 
     @Override
-    public IContext getContext() {
-        return null;
-    }
-
-    @Override
-    public Iterable<IFlag> getFlags() {
-        return null;
-    }
-
-    @Override
-    public boolean containsFlag(IFlag flag) {
-        return false;
-    }
-
-    @Override
-    public String getName() {
-        return null;
+    public <T> T visit(IStructureVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 }

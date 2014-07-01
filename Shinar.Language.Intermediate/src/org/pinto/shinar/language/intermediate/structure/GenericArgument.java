@@ -1,16 +1,25 @@
 package org.pinto.shinar.language.intermediate.structure;
-import org.pinto.shinar.language.core.structure.*;
-import lombok.*;
+
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.Setter;
+import org.pinto.shinar.language.core.structure.IGenericArgument;
+import org.pinto.shinar.language.core.structure.IStructureFragmentVisitor;
+import org.pinto.shinar.language.core.structure.ITypeReference;
+
+import java.util.ArrayList;
 
 /**
  * Created by marco on 29/06/14.
  */
 @Data
-public class GenericArgument implements IGenericArgument{
-    @Override
-    public ITypeReference getType() {
-        return null;
-    }
+public class GenericArgument implements IGenericArgument {
+    private TypeReference type;
+    private String name;
+    @Setter(AccessLevel.PROTECTED)
+    private ArrayList<ITypeReference> childRequests = new ArrayList<ITypeReference>();
+    @Setter(AccessLevel.PROTECTED)
+    private ArrayList<ITypeReference> parentRequests = new ArrayList<ITypeReference>();
 
     @Override
     public boolean isWildcard() {
@@ -18,27 +27,18 @@ public class GenericArgument implements IGenericArgument{
     }
 
     @Override
-    public Iterable<ITypeReference> getChildRequests() {
-        return null;
-    }
-
-    @Override
     public boolean hasChildRequests() {
-        return false;
-    }
-
-    @Override
-    public Iterable<ITypeReference> getParentRequests() {
-        return null;
+        return childRequests.size() == 0;
     }
 
     @Override
     public boolean hasParentRequests() {
-        return false;
+        return parentRequests.size() == 0;
     }
 
     @Override
-    public String getName() {
-        return null;
+    public <T> T visit(IStructureFragmentVisitor<T> visitor) {
+        return visitor.visit(this);
     }
+
 }

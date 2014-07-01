@@ -1,39 +1,35 @@
 package org.pinto.shinar.language.intermediate.structure;
-import org.pinto.shinar.language.core.structure.*;
-import lombok.*;
+
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.Setter;
+import org.pinto.shinar.language.core.structure.IElementVisitor;
+import org.pinto.shinar.language.core.structure.IExpression;
+import org.pinto.shinar.language.core.structure.IField;
+import org.pinto.shinar.language.core.structure.IFlag;
+
+import java.util.ArrayList;
 
 /**
  * Created by marco on 29/06/14.
  */
 @Data
-public class Field implements IField{
-    @Override
-    public ITypeReference getType() {
-        return null;
-    }
-
-    @Override
-    public IExpression getDefaultValue() {
-        return null;
-    }
-
-    @Override
-    public IContext getContext() {
-        return null;
-    }
-
-    @Override
-    public Iterable<IFlag> getFlags() {
-        return null;
-    }
+public class Field implements IField {
+    private TypeReference type;
+    private IExpression defaultValue;
+    private Context context;
+    private String name;
+    @Setter(AccessLevel.PROTECTED)
+    private ArrayList<IFlag> flags = new ArrayList<IFlag>();
 
     @Override
     public boolean containsFlag(IFlag flag) {
-        return false;
+        return flags.contains(flag);
     }
 
     @Override
-    public String getName() {
-        return null;
+    public <T> T visit(IElementVisitor<T> visitor) {
+        return visitor.visit(this);
     }
+
 }

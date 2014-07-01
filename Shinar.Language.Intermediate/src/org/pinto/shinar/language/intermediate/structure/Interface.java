@@ -1,54 +1,29 @@
 package org.pinto.shinar.language.intermediate.structure;
-import org.pinto.shinar.language.core.structure.*;
-import lombok.*;
+
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.Setter;
+import org.pinto.shinar.language.core.structure.IInterface;
+import org.pinto.shinar.language.core.structure.IStructureVisitor;
+import org.pinto.shinar.language.core.structure.IType;
+
+import java.util.ArrayList;
 
 /**
  * Created by marco on 29/06/14.
  */
 @Data
-public class Interface implements IInterface{
-    @Override
-    public Iterable<IType> getImplementations() {
-        return null;
-    }
+public class Interface extends Type implements IInterface {
+    @Setter(AccessLevel.PROTECTED)
+    private ArrayList<IType> implementations = new ArrayList<IType>();
 
     @Override
     public boolean hasImplementations() {
-        return false;
+        return implementations.size() == 0;
     }
 
     @Override
-    public Iterable<IElement> getElements() {
-        return null;
-    }
-
-    @Override
-    public boolean hasElements() {
-        return false;
-    }
-
-    @Override
-    public ITypeReference getTypeReference(ITypeReference... genericArguments) {
-        return null;
-    }
-
-    @Override
-    public IContext getContext() {
-        return null;
-    }
-
-    @Override
-    public Iterable<IFlag> getFlags() {
-        return null;
-    }
-
-    @Override
-    public boolean containsFlag(IFlag flag) {
-        return false;
-    }
-
-    @Override
-    public String getName() {
-        return null;
+    public <T> T visit(IStructureVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 }

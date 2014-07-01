@@ -1,10 +1,12 @@
 package org.pinto.shinar.language.intermediate.expression;
-import org.pinto.shinar.language.core.expression.*;
-import lombok.*;
+
+import lombok.Data;
+import org.pinto.shinar.language.core.expression.AbstractExpression;
+import org.pinto.shinar.language.core.expression.IExpressionVisitor;
+import org.pinto.shinar.language.core.expression.IMethodCall;
 import org.pinto.shinar.language.core.structure.IExpression;
 import org.pinto.shinar.language.core.structure.IGenericArgument;
 import org.pinto.shinar.language.intermediate.structure.Context;
-import org.pinto.shinar.language.intermediate.structure.Expression;
 
 import java.util.ArrayList;
 
@@ -12,7 +14,7 @@ import java.util.ArrayList;
  * Created by marco on 29/06/14.
  */
 @Data
-public class MethodCall implements IMethodCall{
+public class MethodCall extends AbstractExpression implements IMethodCall {
     private String methodName;
     private IExpression expression;
     private ArrayList<IExpression> arguments;
@@ -22,5 +24,10 @@ public class MethodCall implements IMethodCall{
     @Override
     public boolean hasGenericArguments() {
         return false;
+    }
+
+    @Override
+    public <T> T visit(IExpressionVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 }
