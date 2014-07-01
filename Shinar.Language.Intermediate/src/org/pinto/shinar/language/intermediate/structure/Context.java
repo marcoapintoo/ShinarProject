@@ -9,4 +9,5 @@ import org.pinto.shinar.language.core.structure.IContext;
 @Data
 public class Context implements IContext {
     private Namespace currentNamespace;
+    private Type currentType;
 }

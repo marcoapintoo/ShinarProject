@@ -6,7 +6,7 @@ import org.pinto.shinar.language.core.structure.*;
 /**
  * Created by marco on 30/06/14.
  */
-public class ExpressionBaseVisitor extends AbstractBaseVisitor implements IExpressionVisitor<String>, IStructureFragmentVisitor<String> {
+public class ExpressionBaseVisitor<TStack extends IStackVisitorData> extends AbstractBaseVisitor<TStack> implements IExpressionVisitor<String>, IStructureFragmentVisitor<String> {
     @Override
     public String visit(IArrayAccess expression) {
         return "";

@@ -4,19 +4,17 @@ import lombok.Data;
 import lombok.experimental.ExtensionMethod;
 import org.apache.commons.lang3.StringUtils;
 import org.pinto.shinar.language.core.expression.*;
-import org.pinto.shinar.language.core.statement.IStatementVisitor;
 import org.pinto.shinar.language.core.structure.*;
 import org.pinto.shinar.language.core.visitor.ExpressionBaseVisitor;
+import org.pinto.shinar.utils.OutputString;
 
 /**
  * Created by marco on 30/06/14.
  */
 @Data
 @ExtensionMethod({StringUtils.class, org.pinto.shinar.utils.StringUtils.class})
-public class ExpressionVisitor extends ExpressionBaseVisitor {
-    private IStatementVisitor<String> statementVisitor;
-    private IStructureVisitor<String> structureVisitor;
-
+public class ExpressionVisitor extends ExpressionBaseVisitor<StackVisitor> {
+    protected IStructureVisitor<String> structureVisitor;
     @Override
     public String visit(IArrayAccess expression) {
         return "@{array}[@{index}]".template(
@@ -27,9 +25,9 @@ public class ExpressionVisitor extends ExpressionBaseVisitor {
 
     @Override
     public String visit(IArray expression) {
-        StringBuilder builder = "[".build();
+        OutputString builder = new OutputString("[");
         for (IExpression expressionItem : expression.getElements()) {
-            builder.build(expressionItem.visit(this), ", ");
+            builder.append(expressionItem.visit(this), ", ");
         }
         builder.append("]");
         return builder.toString();
@@ -69,9 +67,9 @@ public class ExpressionVisitor extends ExpressionBaseVisitor {
 
     @Override
     public String visit(IInfixOperation expression) {
-        StringBuilder builder = expression.getLeftOperand().visit(this).build();
+        OutputString builder = new OutputString(expression.getLeftOperand().visit(this));
         for (IExpression expressionItem : expression.getRightOperands()) {
-            builder.build(expression.getOperator().toString(), " ", expressionItem.visit(this));
+            builder.append(expression.getOperator().toString(), " ", expressionItem.visit(this));
         }
         return builder.toString();
     }
@@ -91,14 +89,10 @@ public class ExpressionVisitor extends ExpressionBaseVisitor {
 
     @Override
     public String visit(IMethodCall expression) {
-        StringBuilder builder = new StringBuilder();
-        builder.append(expression.getExpression().visit(this));
-        builder.append('.');
-        builder.append(expression.getMethodName());
-        builder.append('(');
+        OutputString builder = new OutputString(expression.getExpression().visit(this),
+                ".", expression.getMethodName(), "(");
         for (IExpression expressionItem : expression.getArguments()) {
-            builder.append(expressionItem.visit(this));
-            builder.append(", ");
+            builder.append(expressionItem.visit(this), ", ");
         }
         builder.append(")");
         return builder.toString();
@@ -108,14 +102,12 @@ public class ExpressionVisitor extends ExpressionBaseVisitor {
     public String visit(IName expression) {
         String name = expression.getName();
         name = name.equals("self") ? "_self_" : name;
-        StringBuilder builder = expression.getNamespace().visit(this).build(".", name);
-        return builder.toString();
+        return OutputString.toString(expression.getNamespace().visit(this), ".", name);
     }
 
     @Override
     public String visit(IParenthesized expression) {
-        StringBuilder builder = "(".build(expression.getExpression().visit(this), ")");
-        return builder.toString();
+        return OutputString.toString("(", expression.getExpression().visit(this), ")");
     }
 
     @Override
@@ -135,10 +127,15 @@ public class ExpressionVisitor extends ExpressionBaseVisitor {
 
     @Override
     public String visit(ISuperMethodCall expression) {
-        return "super(self, @{basetype}).@{method_name}(".template(
-                "base_type", expression.getContext().getCurrentType().visit(structureVisitor),
+        OutputString builder = new OutputString("super(self, @{basetype}).@{method_name}(".template(
+                "base_type", expression.getContext().getCurrentType().visit(getStructureVisitor()),
                 "method_name", expression.getMethodName()
-        );
+        ));
+        for (IExpression e : expression.getArguments()) {
+            builder.append(e.visit(this), ", ");
+        }
+        builder.append(")");
+        return builder.toString();
     }
 
     @Override
@@ -148,26 +145,35 @@ public class ExpressionVisitor extends ExpressionBaseVisitor {
 
     @Override
     public String visit(IVariableDeclaration expression) {
-        return super.visit(expression);
+        return "@{name} = @{defaultvalue}".template(
+                "name", expression.getName(),
+                "defaultvalue", expression.getDefaultValue().visit(this)
+        );
     }
 
     @Override
     public String visit(ITypeReference element) {
-        return super.visit(element);
+        INamespace namespace = element.getType().getContext().getCurrentNamespace();
+        return "@{namespace}@{typename}".template(
+                "namespace", namespace == null ? "" : (namespace.getFullName() + "."),
+                "typename", element.getType().getName()
+        );
     }
 
     @Override
     public String visit(INamespace element) {
-        return super.visit(element);
+        if (element == null) return "";
+        if (element.getRoot() == null) return element.getName();
+        return OutputString.toString(element.getRoot().visit(this), ".", element.getName());
     }
 
     @Override
     public String visit(IGenericArgument element) {
-        return super.visit(element);
+        return "";
     }
 
     @Override
     public String visit(IGenericParameter element) {
-        return super.visit(element);
+        return "";
     }
 }

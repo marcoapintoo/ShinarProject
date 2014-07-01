@@ -12,7 +12,7 @@ import org.pinto.shinar.language.core.structure.IMethod;
  * Created by marco on 30/06/14.
  */
 @Data
-public class ElementBaseVisitor extends AbstractBaseVisitor implements IElementVisitor<String> {
+public class ElementBaseVisitor<TStack extends IStackVisitorData> extends AbstractBaseVisitor<TStack> implements IElementVisitor<String> {
     private IExpressionVisitor<String> expressionVisitor;
     private IStatementVisitor<String> statementVisitor;
 

@@ -9,7 +9,7 @@ import org.pinto.shinar.language.core.structure.*;
  * Created by marco on 30/06/14.
  */
 @Data
-public class StructureBaseVisitor extends AbstractBaseVisitor implements IStructureVisitor<String> {
+public class StructureBaseVisitor<TStack extends IStackVisitorData> extends AbstractBaseVisitor<TStack> implements IStructureVisitor<String> {
     private IExpressionVisitor<String> expressionVisitor;
     private IStatementVisitor<String> statementVisitor;
     private IElementVisitor<String> elementVisitor;

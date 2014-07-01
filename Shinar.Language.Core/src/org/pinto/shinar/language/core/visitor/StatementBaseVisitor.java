@@ -9,7 +9,7 @@ import org.pinto.shinar.language.core.structure.IExpression;
  * Created by marco on 30/06/14.
  */
 @Data
-public class StatementBaseVisitor extends AbstractBaseVisitor implements IStatementVisitor<String> {
+public class StatementBaseVisitor<TStack extends IStackVisitorData> extends AbstractBaseVisitor<TStack> implements IStatementVisitor<String> {
     private IExpressionVisitor<String> expressionVisitor;
 
     @Override

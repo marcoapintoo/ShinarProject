@@ -5,7 +5,7 @@ import org.pinto.shinar.language.core.visitor.StructureBaseVisitor;
 /**
  * Created by marco on 30/06/14.
  */
-public class StructureVisitor extends StructureBaseVisitor {
+public class StructureVisitor extends StructureBaseVisitor<StackVisitor> {
     public StructureVisitor() {
         ExpressionVisitor expressionVisitor = new ExpressionVisitor();
         StatementVisitor statementVisitor = new StatementVisitor();
@@ -13,6 +13,7 @@ public class StructureVisitor extends StructureBaseVisitor {
         statementVisitor.setExpressionVisitor(expressionVisitor);
         elementVisitor.setExpressionVisitor(expressionVisitor);
         elementVisitor.setStatementVisitor(statementVisitor);
+        expressionVisitor.setStructureVisitor(this);
         setExpressionVisitor(expressionVisitor);
         setStatementVisitor(statementVisitor);
         setElementVisitor(elementVisitor);
