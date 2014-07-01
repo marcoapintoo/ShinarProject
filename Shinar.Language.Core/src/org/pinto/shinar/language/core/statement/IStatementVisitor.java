@@ -34,8 +34,6 @@ public interface IStatementVisitor<T> {
 
     T visit(IThrow statement);
 
-    T visit(ITryCatch statement);
-
     T visit(ITry statement);
 
     T visit(ITypeDeclaration statement);

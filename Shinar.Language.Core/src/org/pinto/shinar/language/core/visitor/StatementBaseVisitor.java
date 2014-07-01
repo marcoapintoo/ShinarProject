@@ -83,11 +83,6 @@ public class StatementBaseVisitor<TStack extends IStackVisitorData> extends Abst
     }
 
     @Override
-    public String visit(ITryCatch statement) {
-        return "";
-    }
-
-    @Override
     public String visit(ITry statement) {
         return "";
     }
