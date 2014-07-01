@@ -88,7 +88,7 @@ public class StatementVisitor extends StatementBaseVisitor<StackVisitor> {
     @Override
     public String visit(IEmpty statement) {
         pushStack(statement);
-
+        getOutputWriter().append("pass");
         popStack();
         return "";
     }
@@ -96,7 +96,14 @@ public class StatementVisitor extends StatementBaseVisitor<StackVisitor> {
     @Override
     public String visit(IForeach statement) {
         pushStack(statement);
-
+        statement.getAction().visit(this);
+        getOutputWriter().append("for ");
+        for (IVariableDeclaration variableDeclaration : statement.getVariables()) {
+            getOutputWriter().append(variableDeclaration.getName()).append(",");
+        }
+        getOutputWriter().append(": ").append(statement.getGenerator().visit(this));
+        getOutputWriter().newlineindented().append(statement.getAction().visit(this));
+        getOutputWriter().newlineunindented();
         popStack();
         return "";
     }
@@ -104,7 +111,16 @@ public class StatementVisitor extends StatementBaseVisitor<StackVisitor> {
     @Override
     public String visit(IFor statement) {
         pushStack(statement);
-
+        for (IExpression expression : statement.getInitializers()) {
+            getOutputWriter().append(expression.visit(this)).newline();
+        }
+        getOutputWriter().append("while ").append(statement.getCondition().visit(this)).append(":");
+        getOutputWriter().newlineindented();
+        getOutputWriter().append(statement.getAction().visit(this));
+        for (IExpression expression : statement.getUpdaters()) {
+            getOutputWriter().append(expression.visit(this)).newline();
+        }
+        getOutputWriter().newlineunindented();
         popStack();
         return "";
     }
@@ -112,7 +128,11 @@ public class StatementVisitor extends StatementBaseVisitor<StackVisitor> {
     @Override
     public String visit(IIf statement) {
         pushStack(statement);
-
+        getOutputWriter().append("if ").append(statement.getCondition().visit(this)).append(":");
+        getOutputWriter().newlineindented().append(statement.getTrueAction().visit(this));
+        getOutputWriter().append("else:");
+        getOutputWriter().newlineindented().append(statement.getFalseAction().visit(this));
+        getOutputWriter().newlineunindented();
         popStack();
         return "";
     }
@@ -120,15 +140,18 @@ public class StatementVisitor extends StatementBaseVisitor<StackVisitor> {
     @Override
     public String visit(ILabeled statement) {
         pushStack(statement);
-
-        popStack();
-        return "";
+        throw new RuntimeException("Label not supported");
+        //popStack();
+        //return "";
     }
 
     @Override
     public String visit(IReturn statement) {
         pushStack(statement);
-
+        getOutputWriter().append("return ");
+        if (statement.hasReturnValue()) {
+            getOutputWriter().append(statement.getReturnValue().visit(this));
+        }
         popStack();
         return "";
     }
